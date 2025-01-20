@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/account_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/account_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/achievement_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/achievement_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/analytics_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/analytics_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/notification_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/notification_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/payment_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/payment_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/post_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/post_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/project_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/project_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/url_shortener_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/url_shortener_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/user_service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/user_service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+    <option name="parallelModelFetch" value="true" />
+  </component>
+</project>

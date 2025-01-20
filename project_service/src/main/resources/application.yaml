@@ -1,0 +1,90 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: Postgres
+
+  config:
+    import: "classpath:properties/google/credentials.properties"
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        calculations_channel:
+          name: calculations_channel
+        invitation_channel:
+          name: invitation_channel
+
+  profiles:
+    active: none
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+server:
+  port: 8092
+  servlet:
+    context-path: /api/v1
+
+logging:
+  level:
+    root: info
+
+calculations_messages_processing:
+  enabled: true
+
+services:
+  s3:
+    endpoint: http://localhost:9000
+    accessKey: user
+    secretKey: password
+    bucketName: projectbucket
+    isMocked: false
+    maxFreeStorageSizeBytes: 2147483648
+    maxProjectCoverSizeBytes: 5242880
+  payment-service:
+    host: http://localhost
+    port: 9080
+  user-service:
+    host: http://localhost
+    port: 8080
+
+internship:
+  duration:
+    max:
+      month: 3
+
+google:
+  calendar_id: basiliskbc4@gmail.com
+  auth_user_id: basiliskbc4@gmail.com
+  tokens_directory_path: tokens
+  credentials_file_path: /google/credentials.json
+  redirect_port: 8888
+  event_popup_time_min: 10
+  event_email_notify_time_min: 1440
+
+calendar:
+  event:
+    count_to_return: 10
+
+project:
+  maxWidth: 1080
+  imageExtension: jpeg
+  contentType: image/jpeg

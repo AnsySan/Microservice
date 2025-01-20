@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/V001__account-service_account.sql
+  - include:
+      file: db/changelog/changeset/V002__account-service_balance_create.sql
+  - include:
+      file: db/changelog/changeset/V003__fill-tables_owner_account_balance.sql
+  - include:
+      file: db/changelog/changeset/V004_account-service_free_account_numbers.sql
+  - include:
+      file: db/changelog/changeset/V005_account-service_account_numbers_sequence.sql
+  - include:
+      file: db/changelog/changeset/V006_account-service_balance_audit.sql
+  - include:
+      file: db/changelog/changeset/V007_aacount-service_update-free-account-number-index.sql

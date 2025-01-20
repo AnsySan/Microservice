@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/achievement_V001__initial.sql
+  - include:
+      file: db/changelog/changeset/achievement_setup_V002.sql
+  - include:
+      file: db/changelog/changeset/achievement_setup_V003.sql

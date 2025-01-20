@@ -1,0 +1,186 @@
+package com.clone.twitter.project_service.service.initiative;
+
+import com.clone.twitter.project_service.dto.initiative.InitiativeDto;
+import com.clone.twitter.project_service.dto.initiative.InitiativeFilterDto;
+import com.clone.twitter.project_service.mapper.InitiativeMapper;
+import com.clone.twitter.project_service.model.Project;
+import com.clone.twitter.project_service.model.TeamMember;
+import com.clone.twitter.project_service.model.initiative.Initiative;
+import com.clone.twitter.project_service.model.initiative.InitiativeStatus;
+import com.clone.twitter.project_service.model.stage.Stage;
+import com.clone.twitter.project_service.repository.InitiativeRepository;
+import com.clone.twitter.project_service.service.moment.MomentService;
+import com.clone.twitter.project_service.validation.initiative.InitiativeValidatorImpl;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class InitiativeServiceImplTest {
+    @Mock
+    private InitiativeMapper mapper;
+    @Mock
+    private InitiativeValidatorImpl validator;
+    @Mock
+    private InitiativeRepository initiativeRepository;
+    @Mock
+    private InitiativeFilterService filterService;
+    @Mock
+    private MomentService momentService;
+    @InjectMocks
+    private InitiativeServiceImpl service;
+
+    private InitiativeDto dto;
+    private Initiative initiative;
+
+    @BeforeEach
+    void init() {
+        List<Stage> stages = List.of(
+                Stage.builder().stageId(1L).build(),
+                Stage.builder().stageId(2L).build(),
+                Stage.builder().stageId(3L).build()
+        );
+
+        Project project = Project.builder().id(4L).build();
+
+        TeamMember curator = TeamMember.builder().userId(5L).build();
+
+        initiative = Initiative.builder()
+                .id(1L)
+                .name("name")
+                .description("desc")
+                .status(InitiativeStatus.ACCEPTED)
+                .stages(stages)
+                .curator(curator)
+                .project(project)
+                .build();
+
+        dto = InitiativeDto.builder()
+                .id(1L)
+                .name("name")
+                .description("desc")
+                .curatorId(5L)
+                .projectId(4L)
+                .status(InitiativeStatus.ACCEPTED)
+                .stageIds(List.of(1L, 2L, 3L))
+                .build();
+    }
+
+    @Test
+    void create() {
+        when(mapper.toEntity(dto)).thenReturn(initiative);
+        when(initiativeRepository.save(initiative)).thenReturn(initiative);
+        when(mapper.toDto(any())).thenReturn(dto);
+
+        InitiativeDto actual = service.create(dto);
+        assertEquals(dto, actual);
+
+        InOrder inOrder = inOrder(validator, mapper, initiativeRepository);
+        inOrder.verify(validator, times(1)).validateCurator(dto);
+        inOrder.verify(mapper, times(1)).toEntity(dto);
+        inOrder.verify(initiativeRepository, times(1)).save(initiative);
+        inOrder.verify(mapper, times(1)).toDto(initiative);
+    }
+
+    @Test
+    void updateOpened() {
+        when(mapper.toEntity(dto)).thenReturn(initiative);
+        when(initiativeRepository.save(initiative)).thenReturn(initiative);
+        when(mapper.toDto(any())).thenReturn(dto);
+
+        InitiativeDto actual = service.update(dto);
+        assertEquals(dto, actual);
+
+        InOrder inOrder = inOrder(validator, mapper, initiativeRepository);
+        inOrder.verify(validator, times(1)).validateCurator(dto);
+        inOrder.verify(mapper, times(1)).toEntity(dto);
+        inOrder.verify(initiativeRepository, times(1)).save(initiative);
+        inOrder.verify(mapper, times(1)).toDto(initiative);
+    }
+
+    @Test
+    void updateClosed() {
+        dto.setStatus(InitiativeStatus.DONE);
+
+        when(mapper.toEntity(dto)).thenReturn(initiative);
+        when(initiativeRepository.save(initiative)).thenReturn(initiative);
+        when(mapper.toDto(any())).thenReturn(dto);
+
+        InitiativeDto actual = service.update(dto);
+        assertEquals(dto, actual);
+
+        InOrder inOrder = inOrder(validator, mapper, initiativeRepository, momentService);
+        inOrder.verify(validator, times(1)).validateCurator(dto);
+        inOrder.verify(mapper, times(1)).toEntity(dto);
+        inOrder.verify(validator, times(1)).validateClosedInitiative(dto);
+        inOrder.verify(momentService, times(1)).createFromInitiative(initiative);
+        inOrder.verify(initiativeRepository, times(1)).save(initiative);
+        inOrder.verify(mapper, times(1)).toDto(initiative);
+    }
+
+    @Test
+    void getAllByFilter() {
+        when(initiativeRepository.findAll()).thenReturn(List.of(initiative));
+        when(mapper.toDto(initiative)).thenReturn(dto);
+        when(filterService.applyAll(any(), any())).thenReturn(Stream.of(initiative));
+
+        InitiativeDto[] expected = new InitiativeDto[]{dto};
+        InitiativeDto[] actual = service.getAllByFilter(new InitiativeFilterDto()).toArray(new InitiativeDto[0]);
+        assertArrayEquals(expected, actual);
+
+        InOrder inOrder = inOrder(initiativeRepository, mapper, filterService);
+        inOrder.verify(initiativeRepository, times(1)).findAll();
+        inOrder.verify(filterService, times(1)).applyAll(any(), any());
+        inOrder.verify(mapper, times(1)).toDto(initiative);
+    }
+
+    @Test
+    void getAll() {
+        when(initiativeRepository.findAll()).thenReturn(List.of(initiative));
+        when(mapper.toDto(initiative)).thenReturn(dto);
+
+        InitiativeDto[] expected = new InitiativeDto[]{dto};
+        InitiativeDto[] actual = service.getAll().toArray(new InitiativeDto[0]);
+        assertArrayEquals(expected, actual);
+
+        InOrder inOrder = inOrder(initiativeRepository, mapper);
+        inOrder.verify(initiativeRepository, times(1)).findAll();
+        inOrder.verify(mapper, times(1)).toDto(initiative);
+    }
+
+    @Test
+    void getByIdNotFoundInitiative() {
+        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, () -> service.getById(1L));
+        assertEquals("can't find initiative with id:1", e.getMessage());
+    }
+
+    @Test
+    void getById() {
+        Long id = 1L;
+        when(initiativeRepository.findById(id)).thenReturn(Optional.of(initiative));
+        when(mapper.toDto(initiative)).thenReturn(dto);
+
+        assertEquals(dto, service.getById(id));
+
+        InOrder inOrder = inOrder(initiativeRepository, mapper);
+        inOrder.verify(initiativeRepository, times(1)).findById(id);
+        inOrder.verify(mapper, times(1)).toDto(initiative);
+    }
+}

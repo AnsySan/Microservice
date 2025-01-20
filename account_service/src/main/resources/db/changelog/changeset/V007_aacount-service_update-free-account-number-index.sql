@@ -1,0 +1,1 @@
+DROP INDEX idx_free_account_number_account_type;

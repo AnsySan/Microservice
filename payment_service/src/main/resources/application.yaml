@@ -1,0 +1,76 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: Postgres
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+    kafka:
+      port: 9092
+      host: localhost
+      group-id: account_service
+
+    channel:
+      payment:
+        new:
+          name: new-payment_channel
+        cancel:
+          name: payment-cancel_channel
+        clear:
+          name: payment-clear_channel
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  profiles:
+    active: test
+
+server:
+  port: 8095
+
+logging:
+  level:
+    root: info
+
+site:
+  openexchangerates:
+    url: https://openexchangerates.org/api
+
+services:
+  openexchangerates:
+    app_id: ca800d6c1f28496a9461bd842d20b919
+
+currencyConverter:
+  commission: 1.01
+
+default:
+  target:
+    currency: USD
+
+scheduler:
+  fetch:
+    currency-rates:
+      cron: "0 0 0 * * *" # every day at 00:00
+  payments:
+    clear:
+      cron: "0 0 0 * * *" # every day at 00:00
+
+async:
+  currency-rates-fetch:
+    threads-count: 2
+  put-in-map:
+    threads-count: 20
